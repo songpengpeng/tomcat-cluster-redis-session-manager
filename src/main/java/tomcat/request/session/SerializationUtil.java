@@ -1,12 +1,6 @@
 package tomcat.request.session;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.io.*;
 import java.security.MessageDigest;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -18,7 +12,7 @@ import org.apache.commons.logging.LogFactory;
 
 /**
  * Tomcat clustering with Redis data-cache implementation.
- * 
+ * <p>
  * Session serialization utility.
  *
  * @author Ranjith Manickam
@@ -32,7 +26,7 @@ public class SerializationUtil {
 
 	/**
 	 * To set class loader
-	 * 
+	 *
 	 * @param loader
 	 */
 	public void setClassLoader(ClassLoader loader) {
@@ -41,7 +35,7 @@ public class SerializationUtil {
 
 	/**
 	 * To get session attributes hash code
-	 * 
+	 *
 	 * @param session
 	 * @return
 	 * @throws IOException
@@ -73,7 +67,7 @@ public class SerializationUtil {
 
 	/**
 	 * To serialize session object
-	 * 
+	 *
 	 * @param session
 	 * @param metadata
 	 * @return
@@ -93,7 +87,7 @@ public class SerializationUtil {
 
 	/**
 	 * To de-serialize session object
-	 * 
+	 *
 	 * @param data
 	 * @param session
 	 * @param metadata
@@ -109,4 +103,5 @@ public class SerializationUtil {
 			session.readObjectData(ois);
 		}
 	}
+
 }

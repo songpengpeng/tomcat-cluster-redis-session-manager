@@ -2,9 +2,9 @@ package tomcat.request.session.data.cache.impl;
 
 /**
  * Tomcat clustering with Redis data-cache implementation.
- * 
+ * <p>
  * Redis data-cache constants.
- * 
+ *
  * @author Ranjith Manickam
  * @since 2.0
  */

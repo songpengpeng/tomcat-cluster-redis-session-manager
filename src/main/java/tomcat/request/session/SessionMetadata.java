@@ -7,7 +7,7 @@ import java.io.Serializable;
 
 /**
  * Tomcat clustering with Redis data-cache implementation.
- * 
+ * <p>
  * This class is uses to store and retrieve the HTTP request session object
  * meta-data.
  *
@@ -26,7 +26,7 @@ public class SessionMetadata implements Serializable {
 
 	/**
 	 * To get session meta-data hash
-	 * 
+	 *
 	 * @return
 	 */
 	public byte[] getAttributesHash() {
@@ -35,7 +35,7 @@ public class SessionMetadata implements Serializable {
 
 	/**
 	 * To set session meta-data hash
-	 * 
+	 *
 	 * @param attributesHash
 	 */
 	public void setAttributesHash(byte[] attributesHash) {
@@ -44,7 +44,7 @@ public class SessionMetadata implements Serializable {
 
 	/**
 	 * To copy session meta-data
-	 * 
+	 *
 	 * @param metadata
 	 */
 	public void copyFieldsFrom(SessionMetadata metadata) {
@@ -53,7 +53,7 @@ public class SessionMetadata implements Serializable {
 
 	/**
 	 * To write session meta-data to output stream
-	 * 
+	 *
 	 * @param out
 	 * @throws IOException
 	 */
@@ -64,7 +64,7 @@ public class SessionMetadata implements Serializable {
 
 	/**
 	 * To read session meta-data from input stream
-	 * 
+	 *
 	 * @param in
 	 * @throws IOException
 	 * @throws ClassNotFoundException

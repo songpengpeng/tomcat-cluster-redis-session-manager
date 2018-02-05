@@ -2,9 +2,9 @@ package tomcat.request.session;
 
 /**
  * Tomcat clustering with Redis data-cache implementation.
- * 
+ * <p>
  * Session context uses to manage current session data.
- * 
+ *
  * @author Ranjith Manickam
  * @since 2.0
  */
@@ -20,7 +20,7 @@ public class SessionContext {
 
 	/**
 	 * To get session id
-	 * 
+	 *
 	 * @return
 	 */
 	public String getId() {
@@ -29,7 +29,7 @@ public class SessionContext {
 
 	/**
 	 * To set session id
-	 * 
+	 *
 	 * @param id
 	 */
 	public void setId(String id) {
@@ -38,7 +38,7 @@ public class SessionContext {
 
 	/**
 	 * To get session
-	 * 
+	 *
 	 * @return
 	 */
 	public Session getSession() {
@@ -47,7 +47,7 @@ public class SessionContext {
 
 	/**
 	 * To set session
-	 * 
+	 *
 	 * @param session
 	 */
 	public void setSession(Session session) {
@@ -56,7 +56,7 @@ public class SessionContext {
 
 	/**
 	 * To check session is persisted
-	 * 
+	 *
 	 * @return
 	 */
 	public boolean isPersisted() {
@@ -65,7 +65,7 @@ public class SessionContext {
 
 	/**
 	 * To set session persisted
-	 * 
+	 *
 	 * @param persisted
 	 */
 	public void setPersisted(boolean persisted) {
@@ -74,7 +74,7 @@ public class SessionContext {
 
 	/**
 	 * To get session meta-data
-	 * 
+	 *
 	 * @return
 	 */
 	public SessionMetadata getMetadata() {
@@ -83,14 +83,16 @@ public class SessionContext {
 
 	/**
 	 * To set session meta-data
-	 * 
+	 *
 	 * @param metadata
 	 */
 	public void setMetadata(SessionMetadata metadata) {
 		this.metadata = metadata;
 	}
 
-	/** {@inheritDoc} */
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public String toString() {
 		return "SessionContext [id=" + id + "]";

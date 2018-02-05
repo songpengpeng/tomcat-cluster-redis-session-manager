@@ -1,26 +1,12 @@
 package tomcat.request.session.data.cache.impl;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Properties;
-import java.util.Set;
+import java.io.*;
+import java.util.*;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import redis.clients.jedis.HostAndPort;
-import redis.clients.jedis.Jedis;
-import redis.clients.jedis.JedisCluster;
-import redis.clients.jedis.JedisPool;
-import redis.clients.jedis.JedisPoolConfig;
-import redis.clients.jedis.Protocol;
+import redis.clients.jedis.*;
 import redis.clients.jedis.exceptions.JedisClusterMaxRedirectionsException;
 import redis.clients.jedis.exceptions.JedisConnectionException;
 import tomcat.request.session.SessionConstants;
@@ -97,24 +83,29 @@ public class RedisDataCache implements DataCache {
 		}
 		Properties properties = loadProperties();
 
-		boolean clusterEnabled = Boolean.valueOf(properties.getProperty(RedisConstants.CLUSTER_ENABLED, RedisConstants.DEFAULT_CLUSTER_ENABLED));
+		boolean clusterEnabled = Boolean.valueOf(
+				properties.getProperty(RedisConstants.CLUSTER_ENABLED, RedisConstants.DEFAULT_CLUSTER_ENABLED));
 
-		String hosts = properties.getProperty(RedisConstants.HOSTS, Protocol.DEFAULT_HOST.concat(":").concat(String.valueOf(Protocol.DEFAULT_PORT)));
+		String hosts = properties.getProperty(RedisConstants.HOSTS,
+				Protocol.DEFAULT_HOST.concat(":").concat(String.valueOf(Protocol.DEFAULT_PORT)));
 		Collection<? extends Serializable> nodes = getJedisNodes(hosts, clusterEnabled);
 
 		String password = properties.getProperty(RedisConstants.PASSWORD);
 		password = (password != null && !password.isEmpty()) ? password : null;
 
-		int database = Integer.parseInt(properties.getProperty(RedisConstants.DATABASE, String.valueOf(Protocol.DEFAULT_DATABASE)));
+		int database = Integer
+				.parseInt(properties.getProperty(RedisConstants.DATABASE, String.valueOf(Protocol.DEFAULT_DATABASE)));
 
-		int timeout = Integer.parseInt(properties.getProperty(RedisConstants.TIMEOUT, String.valueOf(Protocol.DEFAULT_TIMEOUT)));
+		int timeout = Integer
+				.parseInt(properties.getProperty(RedisConstants.TIMEOUT, String.valueOf(Protocol.DEFAULT_TIMEOUT)));
 		timeout = (timeout < Protocol.DEFAULT_TIMEOUT) ? Protocol.DEFAULT_TIMEOUT : timeout;
 
 		if (clusterEnabled) {
 			dataCache = new RedisClusterCacheUtil((Set<HostAndPort>) nodes, timeout, getPoolConfig(properties));
 		} else {
 			dataCache = new RedisCacheUtil(((List<String>) nodes).get(0),
-					Integer.parseInt(((List<String>) nodes).get(1)), password, database, timeout, getPoolConfig(properties));
+					Integer.parseInt(((List<String>) nodes).get(1)), password, database, timeout,
+					getPoolConfig(properties));
 		}
 	}
 
@@ -126,28 +117,36 @@ public class RedisDataCache implements DataCache {
 	 */
 	private JedisPoolConfig getPoolConfig(Properties properties) {
 		JedisPoolConfig poolConfig = new JedisPoolConfig();
-		int maxActive = Integer.parseInt(properties.getProperty(RedisConstants.MAX_ACTIVE, RedisConstants.DEFAULT_MAX_ACTIVE_VALUE));
+		int maxActive = Integer
+				.parseInt(properties.getProperty(RedisConstants.MAX_ACTIVE, RedisConstants.DEFAULT_MAX_ACTIVE_VALUE));
 		poolConfig.setMaxTotal(maxActive);
 
-		boolean testOnBorrow = Boolean.parseBoolean(properties.getProperty(RedisConstants.TEST_ONBORROW, RedisConstants.DEFAULT_TEST_ONBORROW_VALUE));
+		boolean testOnBorrow = Boolean.parseBoolean(
+				properties.getProperty(RedisConstants.TEST_ONBORROW, RedisConstants.DEFAULT_TEST_ONBORROW_VALUE));
 		poolConfig.setTestOnBorrow(testOnBorrow);
 
-		boolean testOnReturn = Boolean.parseBoolean(properties.getProperty(RedisConstants.TEST_ONRETURN, RedisConstants.DEFAULT_TEST_ONRETURN_VALUE));
+		boolean testOnReturn = Boolean.parseBoolean(
+				properties.getProperty(RedisConstants.TEST_ONRETURN, RedisConstants.DEFAULT_TEST_ONRETURN_VALUE));
 		poolConfig.setTestOnReturn(testOnReturn);
 
-		int maxIdle = Integer.parseInt(properties.getProperty(RedisConstants.MAX_ACTIVE, RedisConstants.DEFAULT_MAX_ACTIVE_VALUE));
+		int maxIdle = Integer
+				.parseInt(properties.getProperty(RedisConstants.MAX_ACTIVE, RedisConstants.DEFAULT_MAX_ACTIVE_VALUE));
 		poolConfig.setMaxIdle(maxIdle);
 
-		int minIdle = Integer.parseInt(properties.getProperty(RedisConstants.MIN_IDLE, RedisConstants.DEFAULT_MIN_IDLE_VALUE));
+		int minIdle = Integer
+				.parseInt(properties.getProperty(RedisConstants.MIN_IDLE, RedisConstants.DEFAULT_MIN_IDLE_VALUE));
 		poolConfig.setMinIdle(minIdle);
 
-		boolean testWhileIdle = Boolean.parseBoolean(properties.getProperty(RedisConstants.TEST_WHILEIDLE, RedisConstants.DEFAULT_TEST_WHILEIDLE_VALUE));
+		boolean testWhileIdle = Boolean.parseBoolean(
+				properties.getProperty(RedisConstants.TEST_WHILEIDLE, RedisConstants.DEFAULT_TEST_WHILEIDLE_VALUE));
 		poolConfig.setTestWhileIdle(testWhileIdle);
 
-		int testNumPerEviction = Integer.parseInt(properties.getProperty(RedisConstants.TEST_NUMPEREVICTION, RedisConstants.DEFAULT_TEST_NUMPEREVICTION_VALUE));
+		int testNumPerEviction = Integer.parseInt(properties.getProperty(RedisConstants.TEST_NUMPEREVICTION,
+				RedisConstants.DEFAULT_TEST_NUMPEREVICTION_VALUE));
 		poolConfig.setNumTestsPerEvictionRun(testNumPerEviction);
 
-		long timeBetweenEviction = Long.parseLong(properties.getProperty(RedisConstants.TIME_BETWEENEVICTION, RedisConstants.DEFAULT_TIME_BETWEENEVICTION_VALUE));
+		long timeBetweenEviction = Long.parseLong(properties.getProperty(RedisConstants.TIME_BETWEENEVICTION,
+				RedisConstants.DEFAULT_TIME_BETWEENEVICTION_VALUE));
 		poolConfig.setTimeBetweenEvictionRunsMillis(timeBetweenEviction);
 		return poolConfig;
 	}
@@ -200,7 +199,8 @@ public class RedisDataCache implements DataCache {
 			InputStream resourceStream = null;
 			try {
 				resourceStream = (filePath != null && !filePath.isEmpty() && new File(filePath).exists())
-						? new FileInputStream(filePath) : null;
+						? new FileInputStream(filePath)
+						: null;
 
 				if (resourceStream == null) {
 					ClassLoader loader = Thread.currentThread().getContextClassLoader();
