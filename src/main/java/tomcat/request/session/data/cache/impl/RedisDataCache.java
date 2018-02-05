@@ -193,8 +193,9 @@ public class RedisDataCache implements DataCache {
 	private Properties loadProperties() {
 		Properties properties = new Properties();
 		try {
-			String filePath = System.getProperty(SessionConstants.CATALINA_BASE).concat(File.separator)
-					.concat(SessionConstants.CONF).concat(File.separator).concat(RedisConstants.PROPERTIES_FILE);
+			String filePath = System.getProperty(SessionConstants.CATALINA_BASE)
+					.concat(File.separator).concat(SessionConstants.CONF)
+					.concat(File.separator).concat(RedisConstants.PROPERTIES_FILE);
 
 			InputStream resourceStream = null;
 			try {
@@ -489,4 +490,10 @@ public class RedisDataCache implements DataCache {
 			}
 		}
 	}
+
+	public static void main(String[] args) {
+		RedisDataCache cache = new RedisDataCache();
+		cache.loadProperties();
+	}
+
 }
