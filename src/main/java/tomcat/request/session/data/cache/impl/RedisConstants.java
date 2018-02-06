@@ -42,4 +42,5 @@ interface RedisConstants {
 	final String DEFAULT_CLUSTER_ENABLED = "false";
 
 	final String CONN_FAILED_RETRY_MSG = "Jedis connection failed, retrying...";
+
 }
