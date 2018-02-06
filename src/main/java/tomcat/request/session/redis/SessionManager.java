@@ -6,22 +6,12 @@ import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.Set;
 
-import org.apache.catalina.Context;
-import org.apache.catalina.Lifecycle;
-import org.apache.catalina.LifecycleException;
-import org.apache.catalina.LifecycleListener;
-import org.apache.catalina.LifecycleState;
-import org.apache.catalina.Valve;
+import org.apache.catalina.*;
 import org.apache.catalina.connector.Request;
 import org.apache.catalina.session.ManagerBase;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
-import tomcat.request.session.SerializationUtil;
+import tomcat.request.session.*;
 import tomcat.request.session.Session;
-import tomcat.request.session.SessionConstants;
-import tomcat.request.session.SessionContext;
-import tomcat.request.session.SessionMetadata;
 import tomcat.request.session.data.cache.DataCache;
 import tomcat.request.session.data.cache.impl.RedisDataCache;
 
@@ -45,8 +35,6 @@ public class SessionManager extends ManagerBase implements Lifecycle {
 	protected SessionHandlerValve handlerValve;
 
 	protected Set<SessionPolicy> sessionPolicy = EnumSet.of(SessionPolicy.DEFAULT);
-
-	private Log log = LogFactory.getLog(SessionManager.class);
 
 	enum SessionPolicy {
 		DEFAULT, SAVE_ON_CHANGE, ALWAYS_SAVE_AFTER_REQUEST;
@@ -143,7 +131,7 @@ public class SessionManager extends ManagerBase implements Lifecycle {
 
 		initialize();
 
-		log.info("The sessions will expire after " + (getSessionTimeout(null)) + " seconds.");
+		System.out.println("The sessions will expire after " + (getSessionTimeout(null)) + " seconds.");
 		context.setDistributable(true);
 	}
 
@@ -180,7 +168,7 @@ public class SessionManager extends ManagerBase implements Lifecycle {
 			try {
 				save(session, true);
 			} catch (Exception ex) {
-				log.error("Error occured while creating session..", ex);
+				System.out.println("Error occured while creating session..");
 				setValues(null, null);
 				session = null;
 			}
@@ -204,7 +192,8 @@ public class SessionManager extends ManagerBase implements Lifecycle {
 	@Override
 	public Session findSession(String sessionId) throws IOException {
 		Session session = null;
-		if (sessionId != null && this.sessionContext.get() != null && sessionId.equals(this.sessionContext.get().getId())) {
+		if (sessionId != null && this.sessionContext.get() != null
+				&& sessionId.equals(this.sessionContext.get().getId())) {
 			session = this.sessionContext.get().getSession();
 		} else {
 			byte[] data = this.dataCache.get(sessionId);
@@ -235,7 +224,7 @@ public class SessionManager extends ManagerBase implements Lifecycle {
 					session = newSession;
 					isPersisted = true;
 				} catch (Exception ex) {
-					log.error("Error occured while de-serializing the session object..", ex);
+					System.out.println("Error occured while de-serializing the session object..");
 				}
 			}
 			setValues(sessionId, session, isPersisted, metadata);
@@ -276,10 +265,11 @@ public class SessionManager extends ManagerBase implements Lifecycle {
 
 			this.serializer = new SerializationUtil();
 			Context context = getContextIns();
-			ClassLoader loader = (context != null && context.getLoader() != null) ? context.getLoader().getClassLoader() : null;
+			ClassLoader loader = (context != null && context.getLoader() != null) ? context.getLoader().getClassLoader()
+					: null;
 			this.serializer.setClassLoader(loader);
 		} catch (Exception ex) {
-			log.error("Error occured while initializing the session manager..", ex);
+			System.out.println("Error occured while initializing the session manager..");
 			throw ex;
 		}
 	}
@@ -295,11 +285,13 @@ public class SessionManager extends ManagerBase implements Lifecycle {
 			Boolean isPersisted;
 			Session newSession = (Session) session;
 			byte[] hash = (this.sessionContext.get() != null && this.sessionContext.get().getMetadata() != null)
-					? this.sessionContext.get().getMetadata().getAttributesHash() : null;
+					? this.sessionContext.get().getMetadata().getAttributesHash()
+					: null;
 			byte[] currentHash = serializer.getSessionAttributesHashCode(newSession);
 
 			if (forceSave || newSession.isDirty()
-					|| (isPersisted = (this.sessionContext.get() != null) ? this.sessionContext.get().isPersisted() : null) == null
+					|| (isPersisted = (this.sessionContext.get() != null) ? this.sessionContext.get().isPersisted()
+							: null) == null
 					|| !isPersisted || !Arrays.equals(hash, currentHash)) {
 
 				SessionMetadata metadata = new SessionMetadata();
@@ -312,10 +304,9 @@ public class SessionManager extends ManagerBase implements Lifecycle {
 
 			int timeout = getSessionTimeout(newSession);
 			this.dataCache.expire(newSession.getId(), timeout);
-			log.trace("Session [" + newSession.getId() + "] expire in [" + timeout + "] seconds.");
-
+			System.out.println("Session [" + newSession.getId() + "] expire in [" + timeout + "] seconds.");
 		} catch (IOException ex) {
-			log.error("Error occured while saving the session object in data cache..", ex);
+			System.out.println("Error occured while saving the session object in data cache..");
 		}
 	}
 
@@ -333,13 +324,14 @@ public class SessionManager extends ManagerBase implements Lifecycle {
 					save(session, getAlwaysSaveAfterRequest());
 				else
 					remove(session);
-				log.trace("Session object " + (session.isValid() ? "saved: " : "removed: ") + session.getId());
+				System.out.println("Session object " + (session.isValid() ? "saved: " : "removed: ") + session.getId());
 			}
 		} catch (Exception ex) {
-			log.error("Error occured while processing post request process..", ex);
+			System.out.println("Error occured while processing post request process..");
 		} finally {
 			this.sessionContext.remove();
-			log.trace("Session removed from ThreadLocal:" + ((session != null) ? session.getIdInternal() : ""));
+			System.out
+					.println("Session removed from ThreadLocal:" + ((session != null) ? session.getIdInternal() : ""));
 		}
 	}
 
@@ -399,9 +391,10 @@ public class SessionManager extends ManagerBase implements Lifecycle {
 				Method method = this.getClass().getSuperclass().getDeclaredMethod("getContainer");
 				return (Context) method.invoke(this);
 			} catch (Exception ex2) {
-				log.error("Error in getContext", ex2);
+				System.out.println("Error in getContext");
 			}
 		}
 		return null;
 	}
+
 }

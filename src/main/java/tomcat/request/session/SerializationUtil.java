@@ -7,8 +7,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.catalina.util.CustomObjectInputStream;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 /**
  * Tomcat clustering with Redis data-cache implementation.
@@ -21,8 +19,6 @@ import org.apache.commons.logging.LogFactory;
 public class SerializationUtil {
 
 	private ClassLoader loader;
-
-	private Log log = LogFactory.getLog(SerializationUtil.class);
 
 	/**
 	 * To set class loader
@@ -60,7 +56,7 @@ public class SerializationUtil {
 		try {
 			digester = MessageDigest.getInstance("MD5");
 		} catch (Exception ex) {
-			log.error("Unable to get MessageDigest instance for MD5", ex);
+			System.out.println("Unable to get MessageDigest instance for MD5");
 		}
 		return digester.digest(serialized);
 	}

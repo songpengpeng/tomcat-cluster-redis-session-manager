@@ -27,11 +27,11 @@
             <artifactId>commons-pool2</artifactId>
             <version>2.4.2</version>
         </dependency>
-        <dependency>
-            <groupId>commons-logging</groupId>
-            <artifactId>commons-logging</artifactId>
-            <version>1.2</version>
-        </dependency>
+        <!--<dependency>-->
+        <!--<groupId>commons-logging</groupId>-->
+        <!--<artifactId>commons-logging</artifactId>-->
+        <!--<version>1.2</version>-->
+        <!--</dependency>-->
 
         <!-- For local development -->
         <!-- <dependency>
@@ -51,7 +51,7 @@
         </dependency> -->
         <!-- For local development end.. -->
 
-        <!-- 这些依赖是为了本地编译 -->
+        <!-- 这些依赖是为了本地编译和测试 -->
         <!-- https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-catalina -->
         <dependency>
             <groupId>org.apache.tomcat</groupId>

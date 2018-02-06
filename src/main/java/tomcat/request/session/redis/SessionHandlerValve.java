@@ -39,4 +39,5 @@ public class SessionHandlerValve extends ValveBase {
 			manager.afterRequest(request);
 		}
 	}
+
 }

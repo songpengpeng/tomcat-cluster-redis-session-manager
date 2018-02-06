@@ -3,9 +3,6 @@ package tomcat.request.session.data.cache.impl;
 import java.io.*;
 import java.util.*;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import redis.clients.jedis.*;
 import redis.clients.jedis.exceptions.JedisClusterMaxRedirectionsException;
 import redis.clients.jedis.exceptions.JedisConnectionException;
@@ -23,8 +20,6 @@ import tomcat.request.session.data.cache.DataCache;
 public class RedisDataCache implements DataCache {
 
 	private static DataCache dataCache;
-
-	private Log log = LogFactory.getLog(RedisDataCache.class);
 
 	public RedisDataCache() {
 		initialize();
@@ -72,9 +67,7 @@ public class RedisDataCache implements DataCache {
 
 	/**
 	 * To initialize the data-cache
-	 * 
-	 * @param properties
-	 * @param filePath
+	 *
 	 */
 	@SuppressWarnings("unchecked")
 	private void initialize() {
@@ -193,16 +186,14 @@ public class RedisDataCache implements DataCache {
 	private Properties loadProperties() {
 		Properties properties = new Properties();
 		try {
-			String filePath = System.getProperty(SessionConstants.CATALINA_BASE)
+			String filePath = System.getenv(SessionConstants.CATALINA_BASE)
 					.concat(File.separator).concat(SessionConstants.CONF)
 					.concat(File.separator).concat(RedisConstants.PROPERTIES_FILE);
-
 			InputStream resourceStream = null;
 			try {
 				resourceStream = (filePath != null && !filePath.isEmpty() && new File(filePath).exists())
 						? new FileInputStream(filePath)
 						: null;
-
 				if (resourceStream == null) {
 					ClassLoader loader = Thread.currentThread().getContextClassLoader();
 					resourceStream = loader.getResourceAsStream(RedisConstants.PROPERTIES_FILE);
@@ -212,7 +203,7 @@ public class RedisDataCache implements DataCache {
 				resourceStream.close();
 			}
 		} catch (IOException ex) {
-			log.error("Error while loading task scheduler properties", ex);
+			System.out.println("Error while loading task scheduler properties");
 		}
 		return properties;
 	}
@@ -231,8 +222,6 @@ public class RedisDataCache implements DataCache {
 
 		private final int numRetries = 3;
 
-		private Log log = LogFactory.getLog(RedisCacheUtil.class);
-
 		public RedisCacheUtil(String host, int port, String password, int database, int timeout,
 				JedisPoolConfig poolConfig) {
 			pool = new JedisPool(poolConfig, host, port, timeout, password, database);
@@ -242,7 +231,7 @@ public class RedisDataCache implements DataCache {
 		@Override
 		public byte[] set(String key, byte[] value) {
 			int tries = 0;
-			boolean sucess = false;
+			boolean success = false;
 			String retVal = null;
 			do {
 				tries++;
@@ -250,13 +239,13 @@ public class RedisDataCache implements DataCache {
 					Jedis jedis = pool.getResource();
 					retVal = jedis.set(key.getBytes(), value);
 					jedis.close();
-					sucess = true;
+					success = true;
 				} catch (JedisConnectionException ex) {
-					log.error(RedisConstants.CONN_FAILED_RETRY_MSG + tries);
+					System.out.println(RedisConstants.CONN_FAILED_RETRY_MSG + tries);
 					if (tries == numRetries)
 						throw ex;
 				}
-			} while (!sucess && tries <= numRetries);
+			} while (!success && tries <= numRetries);
 			return (retVal != null) ? retVal.getBytes() : null;
 		}
 
@@ -274,7 +263,7 @@ public class RedisDataCache implements DataCache {
 					jedis.close();
 					sucess = true;
 				} catch (JedisConnectionException ex) {
-					log.error(RedisConstants.CONN_FAILED_RETRY_MSG + tries);
+					System.out.println(RedisConstants.CONN_FAILED_RETRY_MSG + tries);
 					if (tries == numRetries)
 						throw ex;
 				}
@@ -296,7 +285,7 @@ public class RedisDataCache implements DataCache {
 					jedis.close();
 					sucess = true;
 				} catch (JedisConnectionException ex) {
-					log.error(RedisConstants.CONN_FAILED_RETRY_MSG + tries);
+					System.out.println(RedisConstants.CONN_FAILED_RETRY_MSG + tries);
 					if (tries == numRetries)
 						throw ex;
 				}
@@ -318,7 +307,7 @@ public class RedisDataCache implements DataCache {
 					jedis.close();
 					sucess = true;
 				} catch (JedisConnectionException ex) {
-					log.error(RedisConstants.CONN_FAILED_RETRY_MSG + tries);
+					System.out.println(RedisConstants.CONN_FAILED_RETRY_MSG + tries);
 					if (tries == numRetries)
 						throw ex;
 				}
@@ -340,7 +329,7 @@ public class RedisDataCache implements DataCache {
 					jedis.close();
 					sucess = true;
 				} catch (JedisConnectionException ex) {
-					log.error(RedisConstants.CONN_FAILED_RETRY_MSG + tries);
+					System.out.println(RedisConstants.CONN_FAILED_RETRY_MSG + tries);
 					if (tries == numRetries)
 						throw ex;
 				}
@@ -363,8 +352,6 @@ public class RedisDataCache implements DataCache {
 
 		private final int numRetries = 30;
 
-		private Log log = LogFactory.getLog(RedisClusterCacheUtil.class);
-
 		public RedisClusterCacheUtil(Set<HostAndPort> nodes, int timeout, JedisPoolConfig poolConfig) {
 			cluster = new JedisCluster(nodes, timeout, poolConfig);
 		}
@@ -381,7 +368,7 @@ public class RedisDataCache implements DataCache {
 					retVal = cluster.set(key.getBytes(), value);
 					sucess = true;
 				} catch (JedisClusterMaxRedirectionsException | JedisConnectionException ex) {
-					log.error(RedisConstants.CONN_FAILED_RETRY_MSG + tries);
+					System.out.println(RedisConstants.CONN_FAILED_RETRY_MSG + tries);
 					if (tries == numRetries) {
 						throw ex;
 					}
@@ -403,7 +390,7 @@ public class RedisDataCache implements DataCache {
 					retVal = cluster.setnx(key.getBytes(), value);
 					sucess = true;
 				} catch (JedisClusterMaxRedirectionsException | JedisConnectionException ex) {
-					log.error(RedisConstants.CONN_FAILED_RETRY_MSG + tries);
+					System.out.println(RedisConstants.CONN_FAILED_RETRY_MSG + tries);
 					if (tries == numRetries) {
 						throw ex;
 					}
@@ -425,7 +412,7 @@ public class RedisDataCache implements DataCache {
 					retVal = cluster.expire(key, seconds);
 					sucess = true;
 				} catch (JedisClusterMaxRedirectionsException | JedisConnectionException ex) {
-					log.error(RedisConstants.CONN_FAILED_RETRY_MSG + tries);
+					System.out.println(RedisConstants.CONN_FAILED_RETRY_MSG + tries);
 					if (tries == numRetries) {
 						throw ex;
 					}
@@ -447,7 +434,7 @@ public class RedisDataCache implements DataCache {
 					retVal = cluster.get(key.getBytes());
 					sucess = true;
 				} catch (JedisClusterMaxRedirectionsException | JedisConnectionException ex) {
-					log.error(RedisConstants.CONN_FAILED_RETRY_MSG + tries);
+					System.out.println(RedisConstants.CONN_FAILED_RETRY_MSG + tries);
 					if (tries == numRetries) {
 						throw ex;
 					}
@@ -469,7 +456,7 @@ public class RedisDataCache implements DataCache {
 					retVal = cluster.del(key);
 					sucess = true;
 				} catch (JedisClusterMaxRedirectionsException | JedisConnectionException ex) {
-					log.error(RedisConstants.CONN_FAILED_RETRY_MSG + tries);
+					System.out.println(RedisConstants.CONN_FAILED_RETRY_MSG + tries);
 					if (tries == numRetries) {
 						throw ex;
 					}

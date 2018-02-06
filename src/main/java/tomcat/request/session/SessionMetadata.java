@@ -75,4 +75,5 @@ public class SessionMetadata implements Serializable {
 		in.read(attributesHash, 0, hashLength);
 		this.attributesHash = attributesHash;
 	}
+
 }
