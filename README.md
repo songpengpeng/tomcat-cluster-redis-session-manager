@@ -46,3 +46,7 @@ more details.. https://github.com/ran-jit/tomcat-cluster-redis-session-manager/w
 
 ### Note:
   * This supports, both redis stand-alone and multiple node cluster based on the redis-data-cache.properties configuration.
+
+### 改变:
+   * 获取redis-data-cache.properties路径的方式从#getProperty()改为#getEnv().
+   * 删除了Logger,避免与项目中的Logger类库冲突.
